@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'pathname'
+require 'tmpdir'
+
+url = ARGV[0]
+basename = url.split('/').last
+
+tmp_dir = Pathname.new(Dir.mktmpdir('download-ts-'))
+
+i = 0
+while system("wget -O #{tmp_dir.join(basename)}_#{i}.ts #{url}_#{i}.ts")
+  i += 1
+end
+
+`cat #{tmp_dir.join('*.ts')} > #{basename}.ts`
