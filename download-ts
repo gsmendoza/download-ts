@@ -4,14 +4,21 @@
 require 'pathname'
 require 'tmpdir'
 
+def part_path(tmp_dir, basename, i)
+  "#{tmp_dir.join(basename)}_#{i}.ts"
+end
+
+
 url = ARGV[0]
-basename = url.split('/').last
+basename = ARGV[1] || url.split('/').last
 
 tmp_dir = Pathname.new(Dir.mktmpdir('download-ts-'))
 
 i = 0
-while system("wget -O #{tmp_dir.join(basename)}_#{i}.ts #{url}_#{i}.ts")
+while system("wget -O #{part_path(tmp_dir, basename, i)} #{url}_#{i}.ts")
   i += 1
 end
 
-`cat #{tmp_dir.join('*.ts')} > #{basename}.ts`
+files = (0...i).map { |i| part_path(tmp_dir, basename, i) }
+
+`cat #{files.join(' ')} > #{basename}`
