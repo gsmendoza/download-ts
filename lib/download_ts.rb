@@ -11,20 +11,16 @@ class DownloadTS
   end
 
   def call
-    `cat #{download_part_files.join(' ')} > #{basename}.mp4`
-  end
-
-  private
-
-  def download_part_files
     i = 0
 
     while system("wget -O #{part_path(i)} #{url}_#{i}.ts")
+      `cat #{part_path(i)} >> #{basename}.mp4`
+
       i += 1
     end
-
-    (0...i).map { |i| part_path(i) }
   end
+
+  private
 
   def tmp_dir
     @tmp_dir ||= Pathname.new(Dir.mktmpdir('download-ts-'))
